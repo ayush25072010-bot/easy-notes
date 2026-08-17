@@ -1,10 +1,423 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Easy Notes</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Easy Notes - Learn, Share & Grow</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f6f8fc;
+      color: #172033;
+    }
+
+    header {
+      background: white;
+      padding: 16px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #172033;
+      font-weight: 600;
+    }
+
+    .login-btn {
+      background: #315bea;
+      color: white !important;
+      padding: 10px 17px;
+      border-radius: 9px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 70px 20px 55px;
+      background: linear-gradient(135deg, #eef3ff, #ffffff);
+    }
+
+    .hero h1 {
+      font-size: clamp(35px, 7vw, 58px);
+      margin-bottom: 15px;
+    }
+
+    .hero h1 span {
+      color: #315bea;
+    }
+
+    .hero p {
+      color: #667085;
+      font-size: 18px;
+      max-width: 650px;
+      margin: auto;
+      line-height: 1.6;
+    }
+
+    .hero-buttons {
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 13px 22px;
+      border-radius: 10px;
+      margin: 5px;
+      font-weight: bold;
+    }
+
+    .primary {
+      background: #315bea;
+      color: white;
+    }
+
+    .secondary {
+      background: white;
+      color: #315bea;
+      border: 1px solid #315bea;
+    }
+
+    .search-box {
+      max-width: 720px;
+      margin: 35px auto 0;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 17px 20px;
+      border: 1px solid #d0d5dd;
+      border-radius: 13px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    section {
+      padding: 45px 6%;
+    }
+
+    .section-title {
+      margin-bottom: 25px;
+      font-size: 27px;
+    }
+
+    .class-grid,
+    .note-grid,
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .class-card,
+    .note-card,
+    .feature-card {
+      background: white;
+      padding: 23px;
+      border-radius: 15px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    }
+
+    .class-card {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .class-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .note-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .note-card p {
+      color: #667085;
+      line-height: 1.5;
+    }
+
+    .stats {
+      background: #172033;
+      color: white;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      text-align: center;
+      padding: 35px 6%;
+    }
+
+    .stats h2 {
+      font-size: 30px;
+    }
+
+    .stats p {
+      margin-top: 5px;
+      opacity: 0.8;
+    }
+
+    .ai-box {
+      background: #eaf0ff;
+      border-radius: 20px;
+      padding: 40px 25px;
+      text-align: center;
+    }
+
+    .ai-box h2 {
+      font-size: 30px;
+      margin-bottom: 12px;
+    }
+
+    .ai-box p {
+      color: #667085;
+      margin-bottom: 20px;
+    }
+
+    .reward-box {
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    footer {
+      background: #111827;
+      color: white;
+      padding: 35px 6%;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    footer p {
+      margin-top: 8px;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 650px) {
+      nav a:not(.login-btn) {
+        display: none;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 35px 5%;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Easy Notes</h1>
-  <p>Website is working!</p>
+
+<header>
+
+  <div class="logo">📚 Easy Notes</div>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Notes</a>
+    <a href="#">About</a>
+    <a href="#" class="login-btn">Login</a>
+  </nav>
+
+</header>
+
+
+<section class="hero">
+
+  <h1>Learn. <span>Share.</span> Grow.</h1>
+
+  <p>
+    Find useful study notes, share your own notes
+    and help students learn better.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="#" class="btn primary">📚 Explore Notes</a>
+    <a href="#" class="btn secondary">📤 Upload Notes</a>
+  </div>
+
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="🔎 Search notes, subjects or chapters..."
+    >
+  </div>
+
+</section>
+
+
+<section>
+
+  <h2 class="section-title">📚 Browse by Class</h2>
+
+  <div class="class-grid">
+
+    <div class="class-card">Class 6</div>
+    <div class="class-card">Class 7</div>
+    <div class="class-card">Class 8</div>
+    <div class="class-card">Class 9</div>
+    <div class="class-card">Class 10</div>
+    <div class="class-card">Class 11</div>
+    <div class="class-card">Class 12</div>
+
+  </div>
+
+</section>
+
+
+<div class="stats">
+
+  <div>
+    <h2>0+</h2>
+    <p>Notes</p>
+  </div>
+
+  <div>
+    <h2>0+</h2>
+    <p>Students</p>
+  </div>
+
+  <div>
+    <h2>0+</h2>
+    <p>Downloads</p>
+  </div>
+
+</div>
+
+
+<section>
+
+  <h2 class="section-title">🔥 Trending Notes</h2>
+
+  <div class="note-grid">
+
+    <div class="note-card">
+      <h3>Class 10 Science</h3>
+      <p>Electricity - Complete Notes</p>
+      <p>⭐ 4.8 • ⬇️ 1.2K downloads</p>
+    </div>
+
+    <div class="note-card">
+      <h3>Class 10 Maths</h3>
+      <p>Trigonometry Notes</p>
+      <p>⭐ 4.7 • ⬇️ 890 downloads</p>
+    </div>
+
+    <div class="note-card">
+      <h3>Class 9 Science</h3>
+      <p>Motion - Important Questions</p>
+      <p>⭐ 4.6 • ⬇️ 650 downloads</p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="ai-box">
+
+    <h2>🤖 Study Smarter with AI</h2>
+
+    <p>
+      Summarize notes, ask questions and create quizzes.
+    </p>
+
+    <a href="#" class="btn primary">
+      AI Assistant — Coming Soon
+    </a>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <h2 class="section-title">🏆 Contributor Rewards</h2>
+
+  <div class="reward-box">
+
+    <h2>Share your knowledge. Earn rewards.</h2>
+
+    <p style="margin:15px 0;color:#667085;">
+      Upload useful original notes and build your contributor reputation.
+    </p>
+
+    <a href="#" class="btn primary">
+      Become a Contributor
+    </a>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <h2 class="section-title">✨ Why Easy Notes?</h2>
+
+  <div class="feature-grid">
+
+    <div class="feature-card">
+      <h3>📚 Easy Learning</h3>
+      <p>Find notes according to your class and subject.</p>
+    </div>
+
+    <div class="feature-card">
+      <h3>📤 Share Knowledge</h3>
+      <p>Upload your own original notes and help other students.</p>
+    </div>
+
+    <div class="feature-card">
+      <h3>🏆 Rewards</h3>
+      <p>Good contributors can become eligible for rewards.</p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  <h2>📚 Easy Notes</h2>
+
+  <p>Learn • Share • Grow</p>
+
+  <p>© 2026 Easy Notes. All rights reserved.</p>
+
+</footer>
+
 </body>
 </html>
