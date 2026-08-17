@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Notes</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: white;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #172033;
+      margin-left: 18px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 70px 20px;
+      background: white;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #667085;
+      margin-bottom: 28px;
+    }
+
+    .buttons a {
+      display: inline-block;
+      padding: 13px 22px;
+      margin: 5px;
+      border-radius: 10px;
+      text-decoration: none;
+      background: #315bea;
+      color: white;
+      font-weight: bold;
+    }
+
+    .search {
+      max-width: 700px;
+      margin: 35px auto;
+      padding: 0 20px;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #d0d5dd;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    section {
+      padding: 45px 7%;
+    }
+
+    section h2 {
+      margin-bottom: 25px;
+    }
+
+    .classes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 15px;
+    }
+
+    .class-card {
+      background: white;
+      padding: 25px;
+      text-align: center;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .note-card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .ai {
+      background: #eaf0ff;
+      padding: 35px;
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    footer {
+      background: #172033;
+      color: white;
+      text-align: center;
+      padding: 30px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">📚 Easy Notes</div>
+
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Notes</a>
+      <a href="#">Login</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Your Notes. Your Knowledge.</h1>
+    <p>Find, share and learn from notes created by students.</p>
+
+    <div class="buttons">
+      <a href="#">📚 Explore Notes</a>
+      <a href="#">📤 Upload Notes</a>
+    </div>
+
+    <div class="search">
+      <input type="text" placeholder="Search notes, subjects, chapters...">
+    </div>
+  </div>
+
+  <section>
+    <h2>📚 Browse by Class</h2>
+
+    <div class="classes">
+      <div class="class-card">Class 6</div>
+      <div class="class-card">Class 7</div>
+      <div class="class-card">Class 8</div>
+      <div class="class-card">Class 9</div>
+      <div class="class-card">Class 10</div>
+      <div class="class-card">Class 11</div>
+      <div class="class-card">Class 12</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔥 Trending Notes</h2>
+
+    <div class="notes">
+      <div class="note-card">
+        <h3>Class 10 Science</h3>
+        <p>Electricity Notes</p>
+        <p>⭐ 4.8 • ⬇️ 1.2K downloads</p>
+      </div>
+
+      <div class="note-card">
+        <h3>Class 10 Maths</h3>
+        <p>Trigonometry Notes</p>
+        <p>⭐ 4.7 • ⬇️ 890 downloads</p>
+      </div>
+
+      <div class="note-card">
+        <h3>Class 9 Science</h3>
+        <p>Motion Notes</p>
+        <p>⭐ 4.6 • ⬇️ 650 downloads</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ai">
+      <h2>🤖 Study Smarter with AI</h2>
+      <p>Summarize notes, ask questions and create quizzes.</p>
+      <br>
+      <strong>AI Assistant — Coming Soon</strong>
+    </div>
+  </section>
+
+  <section>
+    <h2>🏆 Top Contributors</h2>
+
+    <div class="notes">
+      <div class="note-card">🥇 Top Contributor</div>
+      <div class="note-card">🥈 Great Contributor</div>
+      <div class="note-card">🥉 Rising Contributor</div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Easy Notes</p>
+    <p>Learn • Share • Grow</p>
+  </footer>
+
+</body>
+</html>
