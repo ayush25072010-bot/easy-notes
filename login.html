@@ -102,7 +102,13 @@
 
     <p class="subtitle">Welcome back! Login to continue.</p>
 
-    <form>
+    <form id="loginForm">
+      <script>
+  document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    alert("Login system is ready!");
+  });
+      </script>
 
       <label for="email">Email</label>
       <input
