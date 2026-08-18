@@ -145,14 +145,6 @@ const firebaseConfig = {
   onAuthStateChanged(auth, (user) => {
     onAuthStateChanged(auth, (user) => {
   console.log("Auth check:", user);
-
-  if (user) {
-    userEmail.textContent = user.email;
-    userName.textContent = "My Profile";
-  } else {
-    window.location.href = "login.html";
-  }
-});
     
     if (user) {
       userEmail.textContent = user.email;
