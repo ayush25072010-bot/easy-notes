@@ -141,7 +141,7 @@ const firebaseConfig = {
   const userName = document.getElementById("userName");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, (user) => {
   console.log("Auth check:", user);
     
     if (user) {
