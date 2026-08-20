@@ -58,14 +58,29 @@
     }
 
     textarea {
-      min-height: 180px;
+      min-height: 150px;
       resize: vertical;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #315bea;
+    .file-box {
+      border: 2px dashed #315bea;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      background: #f8faff;
+    }
+
+    .file-box input {
+      border: none;
+      padding: 5px;
+      background: transparent;
+    }
+
+    #fileName {
+      margin-top: 10px;
+      color: #667085;
+      font-size: 14px;
+      word-break: break-word;
     }
 
     button {
@@ -83,7 +98,6 @@
 
     button:disabled {
       opacity: 0.6;
-      cursor: not-allowed;
     }
 
     #message {
@@ -104,204 +118,355 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>📚 Upload Notes</h1>
+  <h1>📚 Upload Notes</h1>
 
-    <p class="subtitle">
-      Share your notes with other students
-    </p>
+  <p class="subtitle">
+    Share your notes with other students
+  </p>
 
-    <form id="notesForm">
+  <form id="notesForm">
 
-      <label for="title">Note Title</label>
+    <label>Note Title</label>
+
+    <input
+      type="text"
+      id="title"
+      placeholder="Example: Class 10 Science Notes"
+      required
+    >
+
+
+    <label>Subject</label>
+
+    <input
+      type="text"
+      id="subject"
+      placeholder="Example: Science"
+      required
+    >
+
+
+    <label>Class</label>
+
+    <select id="className" required>
+
+      <option value="">Select Class</option>
+
+      <option value="6">Class 6</option>
+      <option value="7">Class 7</option>
+      <option value="8">Class 8</option>
+      <option value="9">Class 9</option>
+      <option value="10">Class 10</option>
+      <option value="11">Class 11</option>
+      <option value="12">Class 12</option>
+
+    </select>
+
+
+    <label>Notes Description</label>
+
+    <textarea
+      id="content"
+      placeholder="Write a short description..."
+      required
+    ></textarea>
+
+
+    <label>Select Note File</label>
+
+    <div class="file-box">
+
       <input
-        type="text"
-        id="title"
-        placeholder="Example: Class 10 Science Notes"
+        type="file"
+        id="file"
+        accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
         required
       >
 
-      <label for="subject">Subject</label>
-      <input
-        type="text"
-        id="subject"
-        placeholder="Example: Science"
-        required
-      >
+      <div id="fileName">
+        No file selected
+      </div>
 
-      <label for="className">Class</label>
-      <select id="className" required>
-        <option value="">Select Class</option>
-        <option value="6">Class 6</option>
-        <option value="7">Class 7</option>
-        <option value="8">Class 8</option>
-        <option value="9">Class 9</option>
-        <option value="10">Class 10</option>
-        <option value="11">Class 11</option>
-        <option value="12">Class 12</option>
-      </select>
-
-      <label for="content">Notes</label>
-      <textarea
-        id="content"
-        placeholder="Write your notes here..."
-        required
-      ></textarea>
-
-      <button type="submit" id="uploadBtn">
-        Upload Note
-      </button>
-
-    </form>
-
-    <div id="message"></div>
-
-    <a class="back" href="index.html">
-      ← Back to Easy Notes
-    </a>
-
-  </div>
+    </div>
 
 
-  <script type="module">
+    <button type="submit" id="uploadBtn">
+      Upload Note
+    </button>
 
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  </form>
 
-    import {
-      getAuth,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  <div id="message"></div>
+
+
+  <a class="back" href="index.html">
+    ← Back to Easy Notes
+  </a>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+  getAuth,
+  onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
 
 
 const firebaseConfig = {
+
   apiKey: "AIzaSyAz7C5Q6qiDjpRpKdnH716IGwu_Z-zXR-s",
+
   authDomain: "easy-notes-1c800.firebaseapp.com",
+
   projectId: "easy-notes-1c800",
+
   storageBucket: "easy-notes-1c800.firebasestorage.app",
+
   messagingSenderId: "329824600443",
+
   appId: "1:329824600443:web:caf94aef60c942abeabdde",
+
   measurementId: "G-HZ716W80VT"
+
 };
 
 
-    const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-    const auth = getAuth(app);
+const auth = getAuth(app);
 
-    const db = getFirestore(app);
+const db = getFirestore(app);
 
-
-    const form = document.getElementById("notesForm");
-
-    const message = document.getElementById("message");
-
-    const uploadBtn = document.getElementById("uploadBtn");
+const storage = getStorage(app);
 
 
-    let currentUser = null;
+const form =
+document.getElementById("notesForm");
+
+const message =
+document.getElementById("message");
+
+const uploadBtn =
+document.getElementById("uploadBtn");
+
+const fileInput =
+document.getElementById("file");
+
+const fileName =
+document.getElementById("fileName");
 
 
-    onAuthStateChanged(auth, (user) => {
+let currentUser = null;
 
-      if (user) {
 
-        currentUser = user;
+onAuthStateChanged(auth, (user) => {
 
-      } else {
+  if (user) {
 
-        window.location.href = "login.html";
+    currentUser = user;
+
+  } else {
+
+    window.location.href = "login.html";
+
+  }
+
+});
+
+
+fileInput.addEventListener("change", () => {
+
+  if (fileInput.files.length > 0) {
+
+    fileName.textContent =
+      "Selected: " + fileInput.files[0].name;
+
+  } else {
+
+    fileName.textContent =
+      "No file selected";
+
+  }
+
+});
+
+
+form.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+
+  if (!currentUser) {
+
+    message.textContent =
+      "Please login first.";
+
+    return;
+
+  }
+
+
+  const title =
+    document.getElementById("title").value.trim();
+
+  const subject =
+    document.getElementById("subject").value.trim();
+
+  const className =
+    document.getElementById("className").value;
+
+  const content =
+    document.getElementById("content").value.trim();
+
+  const file =
+    fileInput.files[0];
+
+
+  if (!file) {
+
+    message.textContent =
+      "Please select a file first.";
+
+    return;
+
+  }
+
+
+  if (file.size > 20 * 1024 * 1024) {
+
+    message.textContent =
+      "File must be less than 20 MB.";
+
+    return;
+
+  }
+
+
+  try {
+
+    uploadBtn.disabled = true;
+
+    uploadBtn.textContent =
+      "Uploading...";
+
+    message.textContent =
+      "Uploading your note...";
+
+
+    const safeFileName =
+      file.name.replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
+
+
+    const filePath =
+      "notes/" +
+      currentUser.uid +
+      "/" +
+      Date.now() +
+      "_" +
+      safeFileName;
+
+
+    const storageRef =
+      ref(storage, filePath);
+
+
+    await uploadBytes(
+      storageRef,
+      file
+    );
+
+
+    const downloadURL =
+      await getDownloadURL(storageRef);
+
+
+    await addDoc(
+      collection(db, "Notes"),
+      {
+
+        title: title,
+
+        subject: subject,
+
+        class: className,
+
+        content: content,
+
+        fileName: file.name,
+
+        fileURL: downloadURL,
+
+        filePath: filePath,
+
+        uploadedBy: currentUser.email,
+
+        uploadedByUid: currentUser.uid,
+
+        createdAt: serverTimestamp()
 
       }
-
-    });
-
-
-    form.addEventListener("submit", async (event) => {
-
-      event.preventDefault();
+    );
 
 
-      if (!currentUser) {
-
-        message.textContent = "Please login first.";
-
-        return;
-
-      }
+    message.textContent =
+      "Note uploaded successfully! 🎉";
 
 
-      const title =
-        document.getElementById("title").value.trim();
+    form.reset();
 
-      const subject =
-        document.getElementById("subject").value.trim();
-
-      const className =
-        document.getElementById("className").value;
-
-      const content =
-        document.getElementById("content").value.trim();
+    fileName.textContent =
+      "No file selected";
 
 
-      try {
+  } catch (error) {
 
-        uploadBtn.disabled = true;
+    console.error(error);
 
-        uploadBtn.textContent = "Uploading...";
+    message.textContent =
+      "Upload failed: " + error.message;
 
-
-        await addDoc(collection(db, "Notes"), {
-
-          title: title,
-
-          subject: subject,
-
-          class: className,
-
-          content: content,
-
-          uploadedBy: currentUser.email,
-
-          createdAt: serverTimestamp()
-
-        });
+  }
 
 
-        message.textContent =
-          "Note uploaded successfully! 🎉";
+  uploadBtn.disabled = false;
 
+  uploadBtn.textContent =
+    "Upload Note";
 
-        form.reset();
+});
 
-
-      } catch (error) {
-
-        console.error(error);
-
-        message.textContent =
-          "Upload failed: " + error.message;
-
-
-      } finally {
-
-        uploadBtn.disabled = false;
-
-        uploadBtn.textContent = "Upload Note";
-
-      }
-
-    });
-
-  </script>
+</script>
 
 </body>
 </html>
