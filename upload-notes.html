@@ -98,6 +98,7 @@
 
     button:disabled {
       opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #message {
@@ -128,7 +129,7 @@
 
   <form id="notesForm">
 
-    <label>Note Title</label>
+    <label for="title">Note Title</label>
 
     <input
       type="text"
@@ -137,8 +138,7 @@
       required
     >
 
-
-    <label>Subject</label>
+    <label for="subject">Subject</label>
 
     <input
       type="text"
@@ -147,13 +147,10 @@
       required
     >
 
-
-    <label>Class</label>
+    <label for="className">Class</label>
 
     <select id="className" required>
-
       <option value="">Select Class</option>
-
       <option value="6">Class 6</option>
       <option value="7">Class 7</option>
       <option value="8">Class 8</option>
@@ -161,11 +158,9 @@
       <option value="10">Class 10</option>
       <option value="11">Class 11</option>
       <option value="12">Class 12</option>
-
     </select>
 
-
-    <label>Notes Description</label>
+    <label for="content">Notes Description</label>
 
     <textarea
       id="content"
@@ -173,8 +168,7 @@
       required
     ></textarea>
 
-
-    <label>Select Note File</label>
+    <label for="file">Select Note File</label>
 
     <div class="file-box">
 
@@ -191,16 +185,13 @@
 
     </div>
 
-
     <button type="submit" id="uploadBtn">
       Upload Note
     </button>
 
   </form>
 
-
   <div id="message"></div>
-
 
   <a class="back" href="index.html">
     ← Back to Easy Notes
@@ -211,260 +202,300 @@
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-import {
-  getAuth,
-  onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  /* =========================
+     FIREBASE CONFIG
+  ========================= */
 
+  const firebaseConfig = {
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+    apiKey: "AIzaSyAz7C5Q6qiDjpRpKdnH716IGwu_Z-zXR-s",
 
+    authDomain: "easy-notes-1c800.firebaseapp.com",
 
-const firebaseConfig = {
+    projectId: "easy-notes-1c800",
 
-  apiKey: "AIzaSyAz7C5Q6qiDjpRpKdnH716IGwu_Z-zXR-s",
+    storageBucket: "easy-notes-1c800.firebasestorage.app",
 
-  authDomain: "easy-notes-1c800.firebaseapp.com",
+    messagingSenderId: "329824600443",
 
-  projectId: "easy-notes-1c800",
+    appId: "1:329824600443:web:caf94aef60c942abeabdde",
 
-  storageBucket: "easy-notes-1c800.firebasestorage.app",
+    measurementId: "G-HZ716W80VT"
 
-  messagingSenderId: "329824600443",
+  };
 
-  appId: "1:329824600443:web:caf94aef60c942abeabdde",
 
-  measurementId: "G-HZ716W80VT"
+  const app = initializeApp(firebaseConfig);
 
-};
+  const auth = getAuth(app);
 
+  const db = getFirestore(app);
 
-const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+  /* =========================
+     CLOUDINARY CONFIG
+  ========================= */
 
-const db = getFirestore(app);
+  const CLOUD_NAME = "ud0xh0hx";
 
-const storage = getStorage(app);
+  const UPLOAD_PRESET = "easy_notes";
 
 
-const form =
-document.getElementById("notesForm");
+  /* =========================
+     ELEMENTS
+  ========================= */
 
-const message =
-document.getElementById("message");
+  const form =
+    document.getElementById("notesForm");
 
-const uploadBtn =
-document.getElementById("uploadBtn");
+  const message =
+    document.getElementById("message");
 
-const fileInput =
-document.getElementById("file");
+  const uploadBtn =
+    document.getElementById("uploadBtn");
 
-const fileName =
-document.getElementById("fileName");
+  const fileInput =
+    document.getElementById("file");
 
+  const fileName =
+    document.getElementById("fileName");
 
-let currentUser = null;
 
+  let currentUser = null;
 
-onAuthStateChanged(auth, (user) => {
 
-  if (user) {
+  /* =========================
+     CHECK LOGIN
+  ========================= */
 
-    currentUser = user;
+  onAuthStateChanged(auth, (user) => {
 
-  } else {
+    if (user) {
 
-    window.location.href = "login.html";
+      currentUser = user;
 
-  }
+    } else {
 
-});
+      window.location.href = "login.html";
 
+    }
 
-fileInput.addEventListener("change", () => {
+  });
 
-  if (fileInput.files.length > 0) {
 
-    fileName.textContent =
-      "Selected: " + fileInput.files[0].name;
+  /* =========================
+     SHOW SELECTED FILE
+  ========================= */
 
-  } else {
+  fileInput.addEventListener("change", () => {
 
-    fileName.textContent =
-      "No file selected";
+    if (fileInput.files.length > 0) {
 
-  }
+      fileName.textContent =
+        "Selected: " + fileInput.files[0].name;
 
-});
+    } else {
 
+      fileName.textContent =
+        "No file selected";
 
-form.addEventListener("submit", async (event) => {
+    }
 
-  event.preventDefault();
+  });
 
 
-  if (!currentUser) {
+  /* =========================
+     UPLOAD
+  ========================= */
 
-    message.textContent =
-      "Please login first.";
+  form.addEventListener("submit", async (event) => {
 
-    return;
+    event.preventDefault();
 
-  }
 
+    if (!currentUser) {
 
-  const title =
-    document.getElementById("title").value.trim();
+      message.textContent =
+        "Please login first.";
 
-  const subject =
-    document.getElementById("subject").value.trim();
+      return;
 
-  const className =
-    document.getElementById("className").value;
+    }
 
-  const content =
-    document.getElementById("content").value.trim();
 
-  const file =
-    fileInput.files[0];
+    const title =
+      document.getElementById("title").value.trim();
 
+    const subject =
+      document.getElementById("subject").value.trim();
 
-  if (!file) {
+    const className =
+      document.getElementById("className").value;
 
-    message.textContent =
-      "Please select a file first.";
+    const content =
+      document.getElementById("content").value.trim();
 
-    return;
+    const file =
+      fileInput.files[0];
 
-  }
 
+    if (!file) {
 
-  if (file.size > 20 * 1024 * 1024) {
+      message.textContent =
+        "Please select a file.";
 
-    message.textContent =
-      "File must be less than 20 MB.";
+      return;
 
-    return;
+    }
 
-  }
 
+    /* Maximum 10 MB */
 
-  try {
+    if (file.size > 10 * 1024 * 1024) {
 
-    uploadBtn.disabled = true;
+      message.textContent =
+        "File must be less than 10 MB.";
 
-    uploadBtn.textContent =
-      "Uploading...";
+      return;
 
-    message.textContent =
-      "Uploading your note...";
+    }
 
 
-    const safeFileName =
-      file.name.replace(
-        /[^a-zA-Z0-9._-]/g,
-        "_"
+    try {
+
+      uploadBtn.disabled = true;
+
+      uploadBtn.textContent =
+        "Uploading...";
+
+      message.textContent =
+        "Uploading your note...";
+
+
+      /* =========================
+         CLOUDINARY UPLOAD
+      ========================= */
+
+      const cloudinaryURL =
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`;
+
+
+      const formData =
+        new FormData();
+
+
+      formData.append(
+        "file",
+        file
       );
 
 
-    const filePath =
-      "notes/" +
-      currentUser.uid +
-      "/" +
-      Date.now() +
-      "_" +
-      safeFileName;
+      formData.append(
+        "upload_preset",
+        UPLOAD_PRESET
+      );
 
 
-    const storageRef =
-      ref(storage, filePath);
+      const response =
+        await fetch(
+          cloudinaryURL,
+          {
+            method: "POST",
+            body: formData
+          }
+        );
 
 
-    await uploadBytes(
-      storageRef,
-      file
-    );
+      const data =
+        await response.json();
 
 
-    const downloadURL =
-      await getDownloadURL(storageRef);
+      if (!response.ok) {
 
-
-    await addDoc(
-      collection(db, "Notes"),
-      {
-
-        title: title,
-
-        subject: subject,
-
-        class: className,
-
-        content: content,
-
-        fileName: file.name,
-
-        fileURL: downloadURL,
-
-        filePath: filePath,
-
-        uploadedBy: currentUser.email,
-
-        uploadedByUid: currentUser.uid,
-
-        createdAt: serverTimestamp()
+        throw new Error(
+          data.error?.message ||
+          "Cloudinary upload failed."
+        );
 
       }
-    );
 
 
-    message.textContent =
-      "Note uploaded successfully! 🎉";
+      const downloadURL =
+        data.secure_url;
 
 
-    form.reset();
+      /* =========================
+         SAVE DATA TO FIRESTORE
+      ========================= */
 
-    fileName.textContent =
-      "No file selected";
+      await addDoc(
+        collection(db, "Notes"),
+        {
+
+          title: title,
+
+          subject: subject,
+
+          class: className,
+
+          content: content,
+
+          fileName: file.name,
+
+          fileURL: downloadURL,
+
+          uploadedBy: currentUser.email,
+
+          uploadedByUid: currentUser.uid,
+
+          createdAt: serverTimestamp()
+
+        }
+      );
 
 
-  } catch (error) {
-
-    console.error(error);
-
-    message.textContent =
-      "Upload failed: " + error.message;
-
-  }
+      message.textContent =
+        "Note uploaded successfully! 🎉";
 
 
-  uploadBtn.disabled = false;
+      form.reset();
 
-  uploadBtn.textContent =
-    "Upload Note";
+      fileName.textContent =
+        "No file selected";
 
-});
+
+    } catch (error) {
+
+      console.error(error);
+
+      message.textContent =
+        "Upload failed: " + error.message;
+
+    }
+
+
+    uploadBtn.disabled = false;
+
+    uploadBtn.textContent =
+      "Upload Note";
+
+  });
 
 </script>
 
