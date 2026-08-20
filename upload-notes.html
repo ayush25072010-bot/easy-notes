@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Upload Notes - Easy Notes</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f6f8fc;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #667085;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d0d5dd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #315bea;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 24px;
+      border: none;
+      border-radius: 10px;
+      background: #315bea;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 18px;
+      font-weight: 600;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #315bea;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>📚 Upload Notes</h1>
+
+    <p class="subtitle">
+      Share your notes with other students
+    </p>
+
+    <form id="notesForm">
+
+      <label for="title">Note Title</label>
+      <input
+        type="text"
+        id="title"
+        placeholder="Example: Class 10 Science Notes"
+        required
+      >
+
+      <label for="subject">Subject</label>
+      <input
+        type="text"
+        id="subject"
+        placeholder="Example: Science"
+        required
+      >
+
+      <label for="className">Class</label>
+      <select id="className" required>
+        <option value="">Select Class</option>
+        <option value="6">Class 6</option>
+        <option value="7">Class 7</option>
+        <option value="8">Class 8</option>
+        <option value="9">Class 9</option>
+        <option value="10">Class 10</option>
+        <option value="11">Class 11</option>
+        <option value="12">Class 12</option>
+      </select>
+
+      <label for="content">Notes</label>
+      <textarea
+        id="content"
+        placeholder="Write your notes here..."
+        required
+      ></textarea>
+
+      <button type="submit" id="uploadBtn">
+        Upload Note
+      </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <a class="back" href="index.html">
+      ← Back to Easy Notes
+    </a>
+
+  </div>
+
+
+  <script type="module">
+
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAz7C5Q6qiDjpRpKdnH716IGwu_Z-zXR-s",
+  authDomain: "easy-notes-1c800.firebaseapp.com",
+  projectId: "easy-notes-1c800",
+  storageBucket: "easy-notes-1c800.firebasestorage.app",
+  messagingSenderId: "329824600443",
+  appId: "1:329824600443:web:caf94aef60c942abeabdde",
+  measurementId: "G-HZ716W80VT"
+};
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+    const db = getFirestore(app);
+
+
+    const form = document.getElementById("notesForm");
+
+    const message = document.getElementById("message");
+
+    const uploadBtn = document.getElementById("uploadBtn");
+
+
+    let currentUser = null;
+
+
+    onAuthStateChanged(auth, (user) => {
+
+      if (user) {
+
+        currentUser = user;
+
+      } else {
+
+        window.location.href = "login.html";
+
+      }
+
+    });
+
+
+    form.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+
+      if (!currentUser) {
+
+        message.textContent = "Please login first.";
+
+        return;
+
+      }
+
+
+      const title =
+        document.getElementById("title").value.trim();
+
+      const subject =
+        document.getElementById("subject").value.trim();
+
+      const className =
+        document.getElementById("className").value;
+
+      const content =
+        document.getElementById("content").value.trim();
+
+
+      try {
+
+        uploadBtn.disabled = true;
+
+        uploadBtn.textContent = "Uploading...";
+
+
+        await addDoc(collection(db, "Notes"), {
+
+          title: title,
+
+          subject: subject,
+
+          class: className,
+
+          content: content,
+
+          uploadedBy: currentUser.email,
+
+          createdAt: serverTimestamp()
+
+        });
+
+
+        message.textContent =
+          "Note uploaded successfully! 🎉";
+
+
+        form.reset();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+          "Upload failed: " + error.message;
+
+
+      } finally {
+
+        uploadBtn.disabled = false;
+
+        uploadBtn.textContent = "Upload Note";
+
+      }
+
+    });
+
+  </script>
+
+</body>
+  </html>
