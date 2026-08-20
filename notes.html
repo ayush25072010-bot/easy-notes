@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Easy Notes - Notes</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f6f8fc;
+      color: #172033;
+    }
+
+    header {
+      background: white;
+      padding: 16px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #315bea;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 35px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #667085;
+      margin-bottom: 30px;
+    }
+
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+      margin-bottom: 25px;
+    }
+
+    .filters input,
+    .filters select {
+      width: 100%;
+      padding: 13px;
+      margin-bottom: 12px;
+      border: 1px solid #d0d5dd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .note-card {
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    }
+
+    .note-card h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+
+    .note-card p {
+      color: #667085;
+      margin: 7px 0;
+      line-height: 1.5;
+    }
+
+    .note-class {
+      display: inline-block;
+      background: #eaf0ff;
+      color: #315bea;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      padding: 11px;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    .view {
+      background: #315bea;
+      color: white;
+    }
+
+    .download {
+      background: #eef3ff;
+      color: #315bea;
+    }
+
+    #status {
+      text-align: center;
+      color: #667085;
+      margin: 25px 0;
+    }
+
+    @media (max-width: 600px) {
+      .logo {
+        font-size: 20px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">📚 Easy Notes</div>
+
+  <nav>
+    <a href="index.html">← Home</a>
+  </nav>
+
+</header>
+
+
+<div class="container">
+
+  <h1>📚 Explore Notes</h1>
+
+  <p class="subtitle">
+    Find notes shared by students
+  </p>
+
+
+  <div class="filters">
+
+    <input
+      type="text"
+      id="search"
+      placeholder="🔎 Search notes, subjects..."
+    >
+
+    <select id="classFilter">
+
+      <option value="">All Classes</option>
+
+      <option value="6">Class 6</option>
+      <option value="7">Class 7</option>
+      <option value="8">Class 8</option>
+      <option value="9">Class 9</option>
+      <option value="10">Class 10</option>
+      <option value="11">Class 11</option>
+      <option value="12">Class 12</option>
+
+    </select>
+
+  </div>
+
+
+  <div id="status">
+    Loading notes...
+  </div>
+
+
+  <div
+    class="notes-grid"
+    id="notesGrid">
+  </div>
+
+</div>
+
+
+<script type="module">
+
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+
+    apiKey: "AIzaSyAz7C5Q6qiDjpRpKdnH716IGwu_Z-zXR-s",
+
+    authDomain: "easy-notes-1c800.firebaseapp.com",
+
+    projectId: "easy-notes-1c800",
+
+    storageBucket: "easy-notes-1c800.firebasestorage.app",
+
+    messagingSenderId: "329824600443",
+
+    appId: "1:329824600443:web:caf94aef60c942abeabdde",
+
+    measurementId: "G-HZ716W80VT"
+
+  };
+
+
+  const app =
+    initializeApp(firebaseConfig);
+
+  const db =
+    getFirestore(app);
+
+
+  const notesGrid =
+    document.getElementById("notesGrid");
+
+  const status =
+    document.getElementById("status");
+
+  const search =
+    document.getElementById("search");
+
+  const classFilter =
+    document.getElementById("classFilter");
+
+
+  let allNotes = [];
+
+
+  async function loadNotes() {
+
+    try {
+
+      const notesQuery =
+        query(
+          collection(db, "Notes"),
+          orderBy("createdAt", "desc")
+        );
+
+
+      const snapshot =
+        await getDocs(notesQuery);
+
+
+      allNotes = [];
+
+
+      snapshot.forEach((doc) => {
+
+        allNotes.push({
+
+          id: doc.id,
+
+          ...doc.data()
+
+        });
+
+      });
+
+
+      displayNotes(allNotes);
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      status.textContent =
+        "Unable to load notes.";
+
+    }
+
+  }
+
+
+  function displayNotes(notes) {
+
+    notesGrid.innerHTML = "";
+
+
+    if (notes.length === 0) {
+
+      status.textContent =
+        "No notes found.";
+
+      return;
+
+    }
+
+
+    status.textContent =
+      `${notes.length} note${notes.length === 1 ? "" : "s"} found`;
+
+
+    notes.forEach((note) => {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "note-card";
+
+
+      card.innerHTML = `
+
+        <span class="note-class">
+          Class ${note.class || "N/A"}
+        </span>
+
+        <h2>
+          ${escapeHTML(note.title || "Untitled Note")}
+        </h2>
+
+        <p>
+          📖 Subject:
+          ${escapeHTML(note.subject || "Not specified")}
+        </p>
+
+        <p>
+          📝 ${escapeHTML(note.content || "")}
+        </p>
+
+        <p>
+          👤 Uploaded by:
+          ${escapeHTML(note.uploadedBy || "Student")}
+        </p>
+
+        <div class="buttons">
+
+          ${
+            note.fileURL
+            ?
+            `
+            <a
+              class="btn view"
+              href="${note.fileURL}"
+              target="_blank"
+              rel="noopener"
+            >
+              📄 View
+            </a>
+
+            <a
+              class="btn download"
+              href="${note.fileURL}"
+              target="_blank"
+              rel="noopener"
+              download
+            >
+              ⬇️ Download
+            </a>
+            `
+            :
+            `
+            <span>
+              File not available
+            </span>
+            `
+          }
+
+        </div>
+
+      `;
+
+
+      notesGrid.appendChild(card);
+
+    });
+
+  }
+
+
+  function escapeHTML(text) {
+
+    const div =
+      document.createElement("div");
+
+    div.textContent =
+      String(text);
+
+    return div.innerHTML;
+
+  }
+
+
+  function filterNotes() {
+
+    const searchText =
+      search.value
+        .toLowerCase()
+        .trim();
+
+
+    const selectedClass =
+      classFilter.value;
+
+
+    const filtered =
+      allNotes.filter((note) => {
+
+        const title =
+          String(note.title || "")
+            .toLowerCase();
+
+        const subject =
+          String(note.subject || "")
+            .toLowerCase();
+
+        const content =
+          String(note.content || "")
+            .toLowerCase();
+
+        const className =
+          String(note.class || "");
+
+
+        const matchesSearch =
+          title.includes(searchText) ||
+          subject.includes(searchText) ||
+          content.includes(searchText);
+
+
+        const matchesClass =
+          !selectedClass ||
+          className === selectedClass;
+
+
+        return (
+          matchesSearch &&
+          matchesClass
+        );
+
+      });
+
+
+    displayNotes(filtered);
+
+  }
+
+
+  search.addEventListener(
+    "input",
+    filterNotes
+  );
+
+
+  classFilter.addEventListener(
+    "change",
+    filterNotes
+  );
+
+
+  loadNotes();
+
+</script>
+
+</body>
+</html>
